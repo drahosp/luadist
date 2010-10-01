@@ -1,0 +1,13 @@
+name = "alpha"
+version = "1.0"
+arch = "Universal"
+type = "all"
+
+desc = "Empty test dist alpha-1.0"
+maintainer = "Maintainer"
+author = "Author 1, Author 2"
+license = "MIT/X11"
+
+depends = {
+	"beta ~= 1"
+}

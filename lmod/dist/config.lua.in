@@ -1,0 +1,90 @@
+--- LuaDist configuration
+-- The contents of this file is automaticaly generated.
+-- Feel free to edit to suit your needs.
+
+local _G = _G
+module ("dist.config")
+
+-- LuaDist Install Identification
+version 		= "1.0.0"				-- Current LuaDist version
+arch			= "@DIST_ARCH@"			-- Host architecture
+type			= "@DIST_TYPE@"			-- Host type
+
+-- Behavior
+binary	= true		-- Use binary dists.
+source	= true		-- Use source dists (requires CMake and MinGW/gcc/VS to be installed).
+link	= @DIST_SYMLINKS@	-- Use symlinks. (Windows and Cygwin need false here)
+start	= true		-- Create environment start script in deployments.
+test	= false		-- Run tests before install.
+verbose	= false		-- Print verbose output.
+debug	= false		-- Start debug mod. Will keep temporary directories too.
+proxy 	= false		-- HTTP proxy to use. False for none, otherwise the proxy address.
+timeout = 10		-- HTTP fetch timeout
+cache 	= 5*60		-- Cache timeout
+
+--- Packages provided by host
+-- If you install any packages manually or using your host OS installer you can add the name-version
+provides = {
+--	"unzip-6.0" 	-- Is available on OSX and most Unix/Linux based installs.
+}
+
+-- Paths to deployment, temporary dit and log file
+root			= (_G.os.getenv("DIST_ROOT") or "/"):gsub("\\","/")		-- Current deployment directory (Directory LuaDist is in)
+temp			= root .. "/tmp"		-- Full path temp
+log			= temp .. "/luadist.log" 	-- Log file
+dists			= "share/luadist/dists"
+
+-- URLs of repositories to search for dists. http:// or file:// URLs are cecognized atm.
+repo = {
+	--- Examples
+	-- "file:///home/joe/my_dists"		-- Private Local Repository Unix
+	-- "file://C:/MyDists"				-- Private Local Repository Windows
+	-- "http://myserver.tld/repo"		-- Private Online Repository
+
+	--- Use local repo to speed things up when re-deploying
+	-- "file://" .. root .. "/dist", 
+
+	--- Stable dists
+	-- "http://dists.luadist.org/Incoming",					-- Dists submitted for inclusion. WARNING: These need evaluation, use at own risk.
+	"http://dists.luadist.org/" .. arch .. "-" .. type, 	-- Default repo for binary dists. NOTE: Notice the repositories are arch/type dependent.
+	"http://dists.luadist.org/Universal-source", 			-- Default repo for source dists
+}
+
+--- !!! Do not edit below unless you know what you are doing. !!!
+-- Additional CMake variables to pass to build
+variables	= {
+	--- LuaDist specific variables
+	DIST_VERSION 		= version,
+	DIST_ARCH			= arch,
+	DIST_TYPE			= type,
+	
+	-- CMake specific setup
+	CMAKE_GENERATOR			= "@CMAKE_GENERATOR@",
+	CMAKE_BUILD_TYPE		= "@CMAKE_BUILD_TYPE@",
+ 	CMAKE_BUILD_TOOL		= "@CMAKE_BUILD_TOOL@",
+
+	-- OSX specific
+	CMAKE_OSX_ARCHITECTURES		= "@CMAKE_OSX_ARCHITECTURES@",
+	-- CMAKE_ASM_FLAGS		= "-arch i386", -- Not set up by cmake automatically
+}
+
+-- Commands to use for building. (CMake 2.8+)
+cmake 		= "cmake"
+cmakeDebug 	= "cmake -DCMAKE_VERBOSE_MAKEFILE=true -DCMAKE_BUILD_TYPE=Debug"
+ctest		= "ctest"
+ctestDebug	= "ctest"
+make		= "cmake --build . --target install --clean-first"
+makeDebug	= "cmake --build . --target install --clean-first"
+
+-- Add -j option to make in case of unix makefiles to speed up builds
+if (variables.CMAKE_GENERATOR == "Unix Makefiles") then
+	make = make .. " -- -j6"
+	makeDebug = makeDebug .. " -- -j6"
+end
+
+-- Function used to display messages, warnings and errors
+message = function(...)
+	_G.io.write(...)
+	_G.io.write("\n")
+	_G.io.flush()
+end

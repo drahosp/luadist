@@ -1,0 +1,345 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+    <title>Reference</title>
+    <link rel="stylesheet" href="../luadoc.css" type="text/css" />
+	<!--meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/-->
+</head>
+
+<body>
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+<div id="main">
+
+<div id="navigation">
+
+
+<h1>LuaDoc</h1>
+<ul>
+	
+	<li><a href="../index.html">Index</a></li>
+	
+</ul>
+
+
+<!-- Module list -->
+
+<h1>Modules</h1>
+<ul>
+
+	<li>
+		<a href="../modules/dist.html">dist</a>
+	</li>
+
+	<li>
+		<a href="../modules/dist.dep.html">dist.dep</a>
+	</li>
+
+	<li>
+		<a href="../modules/dist.fetch.html">dist.fetch</a>
+	</li>
+
+	<li>
+		<a href="../modules/dist.log.html">dist.log</a>
+	</li>
+
+	<li>
+		<a href="../modules/dist.manifest.html">dist.manifest</a>
+	</li>
+
+	<li>
+		<a href="../modules/dist.package.html">dist.package</a>
+	</li>
+
+	<li><strong>dist.persist</strong></li>
+	
+	<li>
+		<a href="../modules/dist.sys.html">dist.sys</a>
+	</li>
+
+</ul>
+
+
+
+<!-- File list -->
+
+
+
+
+
+
+</div><!-- id="navigation" -->
+
+<div id="content">
+
+<h1>Module <code>dist.persist</code></h1>
+
+<p>Persistency table serializarion. 2DO: If a better persistency dist with good readability becomes available change this code This module contains functions that deal with serialization and loading of tables. loadText - text 2 table load - file 2 table saveText - table 2 text save - table 2 file saveManifest - variant of save for manifests</p>
+
+
+
+
+
+<h2>Functions</h2>
+<table class="function_list">
+
+	<tr>
+	<td class="name" nowrap><a href="#load">load</a>&nbsp;(filename)</td>
+	<td class="summary">Load table from file.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#loadText">loadText</a>&nbsp;(text)</td>
+	<td class="summary">Load table from text.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#save">save</a>&nbsp;(filename, tbl)</td>
+	<td class="summary">Save table to file.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#saveManifest">saveManifest</a>&nbsp;(filename, dists)</td>
+	<td class="summary">Special serialization formating for manifests.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#saveText">saveText</a>&nbsp;(tbl)</td>
+	<td class="summary">Save table to string.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#serialize">serialize</a>&nbsp;(o, d, tbl)</td>
+	<td class="summary">Serialize a table into text.</td>
+	</tr>
+
+</table>
+
+
+
+
+
+
+<br/>
+<br/>
+
+
+
+<h2><a name="functions"></a>Functions</h2>
+<dl class="function">
+
+
+
+<dt><a name="load"></a><strong>load</strong>&nbsp;(filename)</dt>
+<dd>
+Load table from file.
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  filename: string: File to load table from
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+table, log: Returns table on success, nil on failure and log message.
+
+
+
+</dd>
+
+
+
+
+<dt><a name="loadText"></a><strong>loadText</strong>&nbsp;(text)</dt>
+<dd>
+Load table from text.
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  text: string: Text to load table from.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+table, log: Returns table on success, nil on failure and log message.
+
+
+
+</dd>
+
+
+
+
+<dt><a name="save"></a><strong>save</strong>&nbsp;(filename, tbl)</dt>
+<dd>
+Save table to file.
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  filename: string: File to save table to.
+	</li>
+	
+	<li>
+	  tbl: table: Table to save.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+ok, log: Returns true on success, nil on failure and log message.
+
+
+
+</dd>
+
+
+
+
+<dt><a name="saveManifest"></a><strong>saveManifest</strong>&nbsp;(filename, dists)</dt>
+<dd>
+Special serialization formating for manifests.
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  filename: string: Path to save manifest to
+	</li>
+	
+	<li>
+	  dists: 
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+ok, log: Returns true on success, nil on failure and log message.
+
+
+
+</dd>
+
+
+
+
+<dt><a name="saveText"></a><strong>saveText</strong>&nbsp;(tbl)</dt>
+<dd>
+Save table to string. Used for dist.info.
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  tbl: table: Table to save.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+out string: Serialized text.
+
+
+
+</dd>
+
+
+
+
+<dt><a name="serialize"></a><strong>serialize</strong>&nbsp;(o, d, tbl)</dt>
+<dd>
+Serialize a table into text.
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  o: 
+	</li>
+	
+	<li>
+	  d: number: Intendation lenght.
+	</li>
+	
+	<li>
+	  tbl: table: Table to serialize.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+out string: Serialized text.
+
+
+
+</dd>
+
+
+</dl>
+
+
+
+
+
+
+</div> <!-- id="content" -->
+
+</div> <!-- id="main" -->
+
+<div id="about">
+	<p><a href="http://validator.w3.org/check?uri=referer"><img src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0!" height="31" width="88" /></a></p>
+</div> <!-- id="about" -->
+
+</div> <!-- id="container" -->	
+</body>
+</html>

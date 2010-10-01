@@ -1,0 +1,323 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+    <title>Reference</title>
+    <link rel="stylesheet" href="../luadoc.css" type="text/css" />
+	<!--meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/-->
+</head>
+
+<body>
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+<div id="main">
+
+<div id="navigation">
+
+
+<h1>LuaDoc</h1>
+<ul>
+	
+	<li><a href="../index.html">Index</a></li>
+	
+</ul>
+
+
+<!-- Module list -->
+
+<h1>Modules</h1>
+<ul>
+
+	<li>
+		<a href="../modules/dist.html">dist</a>
+	</li>
+
+	<li>
+		<a href="../modules/dist.dep.html">dist.dep</a>
+	</li>
+
+	<li>
+		<a href="../modules/dist.fetch.html">dist.fetch</a>
+	</li>
+
+	<li>
+		<a href="../modules/dist.log.html">dist.log</a>
+	</li>
+
+	<li>
+		<a href="../modules/dist.manifest.html">dist.manifest</a>
+	</li>
+
+	<li><strong>dist.package</strong></li>
+	
+	<li>
+		<a href="../modules/dist.persist.html">dist.persist</a>
+	</li>
+
+	<li>
+		<a href="../modules/dist.sys.html">dist.sys</a>
+	</li>
+
+</ul>
+
+
+
+<!-- File list -->
+
+
+
+
+
+
+</div><!-- id="navigation" -->
+
+<div id="content">
+
+<h1>Module <code>dist.package</code></h1>
+
+<p>Package handling functions. This module deals with packages, these are unpacked dists in LuaDist terminology The following functions are provided: unpack - fetch and unpack a dist build - compile a source dist deploy - install a dist into deployment dir and/or fix links. pack - create dist from package delete - delete package</p>
+
+
+
+
+
+<h2>Functions</h2>
+<table class="function_list">
+
+	<tr>
+	<td class="name" nowrap><a href="#build">build</a>&nbsp;(dist, depl, variables)</td>
+	<td class="summary">Build, deploy and test a source dist using CMake.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#delete">delete</a>&nbsp;(dist, depl)</td>
+	<td class="summary">Delete a deployed dist.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#deploy">deploy</a>&nbsp;(dist, depl)</td>
+	<td class="summary">Deploy dist into deployment directory.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#pack">pack</a>&nbsp;(dist, depl, dir)</td>
+	<td class="summary">Pack a package to create a dist.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#unpack">unpack</a>&nbsp;(url, dest)</td>
+	<td class="summary">Fetch and unpack zip/dist from URL into dest directory.</td>
+	</tr>
+
+</table>
+
+
+
+
+
+
+<br/>
+<br/>
+
+
+
+<h2><a name="functions"></a>Functions</h2>
+<dl class="function">
+
+
+
+<dt><a name="build"></a><strong>build</strong>&nbsp;(dist, depl, variables)</dt>
+<dd>
+Build, deploy and test a source dist using CMake.
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  dist: string: Directory of the source dist to build.
+	</li>
+	
+	<li>
+	  depl: 
+	</li>
+	
+	<li>
+	  variables: 
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+path, log: Returns temporary directory the dist was build into and log message.
+
+
+
+</dd>
+
+
+
+
+<dt><a name="delete"></a><strong>delete</strong>&nbsp;(dist, depl)</dt>
+<dd>
+Delete a deployed dist.
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  dist: string: dist to delete.
+	</li>
+	
+	<li>
+	  depl: string: deployment dir to delete from.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+ok, log: Returns success and nlog message.
+
+
+
+</dd>
+
+
+
+
+<dt><a name="deploy"></a><strong>deploy</strong>&nbsp;(dist, depl)</dt>
+<dd>
+Deploy dist into deployment directory.
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  dist: string: Directory of the dist to deploy.
+	</li>
+	
+	<li>
+	  depl: string: Deployment directory nil for default.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+ok, log: Returns true on success and log message.
+
+
+
+</dd>
+
+
+
+
+<dt><a name="pack"></a><strong>pack</strong>&nbsp;(dist, depl, dir)</dt>
+<dd>
+Pack a package to create a dist.
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  dist: string: deployed dist to pack.
+	</li>
+	
+	<li>
+	  depl: string: deployment dir to pack from.
+	</li>
+	
+	<li>
+	  dir: string: Optional destination for the dist, current directory will be used by default.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+ok, log: Returns success and log message.
+
+
+
+</dd>
+
+
+
+
+<dt><a name="unpack"></a><strong>unpack</strong>&nbsp;(url, dest)</dt>
+<dd>
+Fetch and unpack zip/dist from URL into dest directory.
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  url: string: Local packed dist or URL to fetch dist from.
+	</li>
+	
+	<li>
+	  dest: string: Destination to unpack contents into, nil for temp directory.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+path, log: Unpacked dist path or nil and log.
+
+
+
+</dd>
+
+
+</dl>
+
+
+
+
+
+
+</div> <!-- id="content" -->
+
+</div> <!-- id="main" -->
+
+<div id="about">
+	<p><a href="http://validator.w3.org/check?uri=referer"><img src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0!" height="31" width="88" /></a></p>
+</div> <!-- id="about" -->
+
+</div> <!-- id="container" -->	
+</body>
+</html>

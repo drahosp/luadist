@@ -1,0 +1,235 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+    <title>Reference</title>
+    <link rel="stylesheet" href="../luadoc.css" type="text/css" />
+	<!--meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/-->
+</head>
+
+<body>
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+<div id="main">
+
+<div id="navigation">
+
+
+<h1>LuaDoc</h1>
+<ul>
+	
+	<li><a href="../index.html">Index</a></li>
+	
+</ul>
+
+
+<!-- Module list -->
+
+<h1>Modules</h1>
+<ul>
+
+	<li>
+		<a href="../modules/dist.html">dist</a>
+	</li>
+
+	<li>
+		<a href="../modules/dist.dep.html">dist.dep</a>
+	</li>
+
+	<li>
+		<a href="../modules/dist.fetch.html">dist.fetch</a>
+	</li>
+
+	<li>
+		<a href="../modules/dist.log.html">dist.log</a>
+	</li>
+
+	<li><strong>dist.manifest</strong></li>
+	
+	<li>
+		<a href="../modules/dist.package.html">dist.package</a>
+	</li>
+
+	<li>
+		<a href="../modules/dist.persist.html">dist.persist</a>
+	</li>
+
+	<li>
+		<a href="../modules/dist.sys.html">dist.sys</a>
+	</li>
+
+</ul>
+
+
+
+<!-- File list -->
+
+
+
+
+
+
+</div><!-- id="navigation" -->
+
+<div id="content">
+
+<h1>Module <code>dist.manifest</code></h1>
+
+<p>The purpose of this module is to check and collect dist manifests. There are three functions provided: make - Generates manifest for local directory get - Gets sorted manifest from URI, this uses make for local paths. For remote directories it requires dist.manifest file to be present. info - Loads and/or corrects and checks dist.info contents Dists and manifests are simply arrays of collected dist.info files.</p>
+
+
+
+
+
+<h2>Functions</h2>
+<table class="function_list">
+
+	<tr>
+	<td class="name" nowrap><a href="#get">get</a>&nbsp;(src, variables, url)</td>
+	<td class="summary">Get or generate repository contents from URI.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#info">info</a>&nbsp;(dist)</td>
+	<td class="summary">Load and check info from file or check info table </td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#make">make</a>&nbsp;(dir)</td>
+	<td class="summary">Collect and sort dists in a directory.</td>
+	</tr>
+
+</table>
+
+
+
+
+
+
+<br/>
+<br/>
+
+
+
+<h2><a name="functions"></a>Functions</h2>
+<dl class="function">
+
+
+
+<dt><a name="get"></a><strong>get</strong>&nbsp;(src, variables, url)</dt>
+<dd>
+Get or generate repository contents from URI.
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  src: 
+	</li>
+	
+	<li>
+	  variables: 
+	</li>
+	
+	<li>
+	  url: string: URL to load the dist.manifest from. In case file:// is used generate the manifest.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+dists, log: Returns true on success and nil and error message on failure.
+
+
+
+</dd>
+
+
+
+
+<dt><a name="info"></a><strong>info</strong>&nbsp;(dist)</dt>
+<dd>
+Load and check info from file or check info table
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  dist: string or table: Path to dist.info or info table to check.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+info, log: Table containing loaded and checked info or nil and log message.
+
+
+
+</dd>
+
+
+
+
+<dt><a name="make"></a><strong>make</strong>&nbsp;(dir)</dt>
+<dd>
+Collect and sort dists in a directory.
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  dir: string: Directory to get manifest from.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+dists, log: Dists in the directory and log message.
+
+
+
+</dd>
+
+
+</dl>
+
+
+
+
+
+
+</div> <!-- id="content" -->
+
+</div> <!-- id="main" -->
+
+<div id="about">
+	<p><a href="http://validator.w3.org/check?uri=referer"><img src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0!" height="31" width="88" /></a></p>
+</div> <!-- id="about" -->
+
+</div> <!-- id="container" -->	
+</body>
+</html>

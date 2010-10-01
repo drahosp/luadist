@@ -1,0 +1,19 @@
+--- This file is part of LuaDist project
+
+name = "luadist"
+version = "1.0.0"
+
+desc = "Simple Lua Module Development, Distribution and Deployment Tool."
+maintainer = "Peter Drahoš"
+author = "Peter Drahoš, Peter Kapec, David Manura"
+license = "MIT/X11"
+url = "http://www.luadist.org"
+
+depends = {
+	"lua ~> 5.1",
+	"md5 >= 1.1",
+	"luasocket >= 2.0.2",
+	"luafilesystem >= 1.4.1",
+	"unzip >= 6.0"
+}
+

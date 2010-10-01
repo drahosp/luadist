@@ -1,0 +1,425 @@
+#!/usr/bin/env lua
+--- Simple LuaDist CLI interface
+-- This script uses the exposed LuaDist APIs to provide commandline interface to LuaDist features.
+-- Peter Kapec, Peter Drahoš LuaDist Project, 2010
+ 
+local dist = require "dist"
+local config = require "dist.config"
+local sys = require "dist.sys"
+local persist = require "dist.persist"
+
+--- Display help
+local function help()
+	print ([[
+LuaDist ]] .. config.version .. [[ - Simple Lua Distribution and Module Deployment System
+Usage: luadist (depldir) [command] (names) (-variables)
+
+where [...] are required and (...) are optional:
+depldir - Optional path to the deployment directory LuaDist will operate on.
+command - Specifies the operation to be executed:
+	help - Display detailed help about command.
+	install - Install/Update Dists from repository.
+	remove - Remove deployed Dists.
+	pack - Pack deployed Dists.
+	search - Search repositories for Dists.
+	list - List deployed Dists.
+	info - Show details about Dist from repository.
+	manifest - Generate dist manifest file for repository.
+	make - Build and deploy dist from path and URL.
+names - A list of names (case sensitive), each name can contain version constraints.
+variables - Configuration options or CMake settings to be passed into the build process.
+Examples:
+	installing luasocket and md5
+	> luadist install luasocket md5
+	installing Lua 5.1.4 to its own deployment directory.
+	> luadist ./example install lua-5.1.4
+	switch to newest LuaJIT 1.x
+	> luadist ./example remove lua
+	> luadist ./example install luajit<2
+	update luajit to latest version
+	> luadist ./example install luajit
+
+For additional help invoke
+>luadist help command
+]])
+end
+
+--- Commands the CLI provides
+local commands
+commands = {
+	-- Display help for any other command or luadist in general.
+	["help"] = {
+		help = [[
+Usage: luadist help (command)
+
+This will show detailed description about (command).
+]],
+		run = function (_, cmds)
+			if #cmds == 0 then
+				help()
+			else
+				for i = 1, #cmds do 
+					local command = cmds[i]
+					if commands[command] then
+						print(commands[command].help)
+					else
+						print("Unknown command: " .. command)
+					end
+				end
+			end
+			return 0
+		end
+	},
+	-- Install dist
+	["install"] = {
+		help = [[
+Usage: luadist (depldir) install (names) (-variables)
+
+The install command can install and update dists by their (names), each name can contain additional version constraints. 
+When constraints are not specified then the newest found is installed. 
+The optional (depldir) path is used to specify deployment directory, by default dists install directly into LuaDist.
+For source dists (-variables) can contain CMake arguments using CMake's -D format and must be properly quoted. 
+Updating all deployed dists is possible by supplying no names to install.
+]],
+		run = function (depldir, names, variables)
+			local ok, err = dist.install(names, depldir, manifest, variables)
+			if not ok then print (err) return 1 end
+			print("Installation succesfull.")
+			return 0
+		end
+	},
+	["test"] = {
+	    help = [[
+Usage: luadist (report) test (names) (-variables)
+
+The test command can test installation of by their (names), each name can contain additional version constraints. 
+When constraints are not specified then the newest found is installed. 
+The optional (report) file is used to specify what type of report to generate, by default test will not generate a report file and will only print to console.
+For source dists (-variables) can contain CMake arguments using CMake's -D format and must be properly quoted. 
+When a report file is supplied LuaDist will also generate packed binary dists from the test deployment, this is usefull when generating multiple binary dists from source.
+]],
+        run = function (report, names, variables)
+            local function saveHtml(filename, reportTable)
+            	local report =  {}
+            	-- beginning of HTML code
+            	report[#report + 1] = [[<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<xhtml xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Report - building packages in LuaDist</title>
+<style type="text/css">
+body
+{background-color: #d0e4fe;}
+</style>
+</head>
+<body>
+<p>
+<u><h2>Results of building packages</h2></u>
+</p>
+]]
+
+            	for distName, distTable in pairs (reportTable) do
+            		-- first add dist name
+            		report[#report + 1] = "<ul>\n  <li style=\"font-size:18px;font-weight:bold;\">"
+            		report[#report + 1] = distName
+            		report[#report + 1] = "</li>\n    <ul>"
+
+            		for archName, archTable in pairs (distTable) do
+            			-- add architecture information
+            			report[#report + 1] = "\n      <li style=\"font-weight:bold\">"
+            			report[#report + 1] = archName
+            			report[#report + 1] = "</li>"
+            			-- and for the architecture add results of test
+            			report[#report + 1] = "\n        <ul>\n          <li>Installation result: "
+
+            			-- if result is "FAILED ..." and not just "OK"
+            			if #archTable.result > 2 then
+            				report[#report + 1] = "<span style=\"color:red\">"
+            				report[#report + 1] = archTable.result
+            				report[#report + 1] = "</span>"
+            			else
+            				report[#report + 1] = archTable.result
+            			end
+
+            			-- add date of test to given architecture
+            			report[#report + 1] = "</li>\n          <li>Date of test: "
+            			report[#report + 1] = os.date ("!%c", os.time (archTable.date))
+            			report[#report + 1] = "</li>\n        </ul>"
+            		end
+
+            		-- end of information about dist
+            		report[#report + 1] = "\n    </ul>\n</ul>\n<hr/>\n"
+            	end
+
+            	-- end of HTML code
+            	report[#report + 1] = "</body>\n</xhtml>\n"
+
+            	-- transform an array of strings into one long string
+            	report = table.concat (report)
+
+            	-- write the HTML code to a file
+            	local output = io.open (filename, "w")
+            	output:write (report)
+            	output:close ()
+            	return true
+            end
+            
+            -- Suppress standard output in tests
+        	config.message = nil
+            
+            -- Get requested dists and repo manifest
+            local manifest = dist.filterManifest()
+            local dists, err = dist.findDists(names, manifest)
+            if not dists then print(err) return 1 end
+            
+        	-- Temporary deployment dir
+        	local temp = sys.path(config.temp, "luadist-test")
+
+        	print ("\nTest results for " .. config.arch .. "-" .. config.type .. ":\n===========================\n")
+            
+            -- Generate the report
+        	local archType = config.arch .. "-" .. config.type
+
+            local test = {}
+        	for i = 1, #dists do
+        		local info = dists[i]
+        		local name = info.name .. "-" .. info.version
+        		local depl = sys.path(temp, name)
+
+        		local entry = {}
+       		    entry.date = os.date("!*t")
+
+                io.write("\t" .. name)
+                io.flush()
+        		-- try to install the module
+        		local ok, err = dist.install(name, depl, manifest, variables)
+        		if not ok then
+        		    io.write(" FAILED: "..err.."\n")
+        		    entry.result = "FAILED: "..err
+        		else
+        		    io.write(" OK.\n")
+        		    entry.result = "OK."
+        		    if report then dist.pack(name, depl) end
+        		end
+        		io.flush()
+
+        		test[name] = {
+        		    [archType] = entry
+        		}
+        	end
+
+            -- Save report if needed
+            if report then
+                if report:match("html$") then
+                    saveHtml(report, test)
+                else
+                    persist.saveManifest(report, test)
+                end
+            end
+
+            -- Cleanup
+        	sys.delete(sys.path(temp))
+
+        	return 0
+        end
+	},
+	-- Update dist
+	["remove"] = {
+		help = [[
+Usage: luadist (depldir) remove (names)
+
+The remove command will remove deployed dists specified by (names) from the deployment directory (depldir). 
+When (depldir) is not specified, then the dist will be removed from LuaDist.
+When no names are supplied LuaDist will delete the deployment entirely.
+NOTE: LuaDist does not do any dist dependency breakage tests on remove!
+WARNING! Be careful when removing whole deployments. You may loose data and in worst case break your system.
+]],
+		run = function (depldir, names)
+			local ok, err = dist.remove(names, depldir)
+			if not ok then print (err) return 1 end
+			print("Removal succesfull.")
+			return 0
+		end
+	},
+	-- Pack dist
+	["pack"] = {
+		help = [[
+Usage: luadist (depldir) pack (names)
+
+The pack command will pack installed dist identified by (names) from the deployment directory (depldir). 
+When (depldir) is not specified the dist will be packed from LuaDist. 
+The resulting dist files will beplaced into current directory.
+When no names are supplied LuaDist will pack all dists in the deployment.
+]],
+		run = function (depldir, names)
+			local ok, err = dist.pack(names, depldir)
+			if not ok then print (err) return 1 end
+			print("Pack successful.")
+			return 0
+		end
+	},
+	-- Search for dist
+	["search"] = {
+		help = [[
+Usage: luadist search (names)
+
+The search command will search repositories for all dists satisfing manes. 
+Wildcard character * can be used to search for.
+When no search arguments are specified then all available dists will be listed. 
+Search results are filtered and display only dists that can be installed for the platform LuaDist is running on.
+]],
+		run = function (_, names)
+			local dists = dist.findDists(names)
+			if not dists then print("\nNo dists found!")return 1 end
+			print("\nSearch result:\n===============\n")
+			for i = 1, #dists do
+				local dist = dists[i]
+				print("\t" .. dist.name .. "-" .. dist.version, "(" .. dist.arch .. "-" .. dist.type .. ")")
+			end
+			return 0
+		end
+	},
+	-- List deployed dists
+	["list"] = {
+		help = [[
+Usage: luadist (depldir) list (names)
+
+The list command will list deployed dists containing any occurance of a string from (strings) in their name.
+When no list arguments are specified then all deployed dists will be listed. 
+]],
+		run = function (depldir, names)
+			local dists = dist.findDists(names, dist.getDeployed(depldir))
+			print("\nDeployed dists:\n===============\n")
+			for i = 1, #dists do
+				local dist = dists[i]
+				if dist.provided then
+					print("\t" .. dist.name .. "-" .. dist.version, "( provided by: " .. dist.provided .. ")")
+				else
+					print("\t" .. dist.name .. "-" .. dist.version, "(" .. dist.arch .. "-" .. dist.type .. ")")
+				end
+			end
+			return 0
+		end
+	},
+	-- Generate manifest
+	["manifest"] = {
+		help = [[
+Usage: luadist (dir) manifest
+ 
+The manifest command will create a dist.manifest file for the directory (dir) or current directory. 
+This file is used as generated static index of dists contained in remote URL repositories where LuaDist cannot fetch directory listings.
+When you plan to make an online repository make sure it contains and up to date manifest.
+]],
+		run = function (dir)
+			local manifest, err = dist.getManifest(dir)
+			if not manifest then return nil, "Could not generate manifest: " .. err end
+			local ok, err = persist.saveManifest("dist.manifest", manifest)
+			if not ok then return nil, "Could not save manifest: " .. err end
+			print("Manifest generated.")
+			return 0
+		end
+	},
+	-- Build a unpacked dist directory
+	["make"] = {
+		help = [[
+Usage: luadist (depldir) make (paths) (variables)
+
+The make command will make and deploy dists into (depldir) from local (paths) or current directory if no paths are specified.
+This command is usefull for development of dists or in cases where you want to force deployment of dists.
+Make sure (paths) contain valid dist.info files or point to .dist or .zip archives. 
+Optional CMake (variables) can be passed to the build process when dealing with source dists using -D[CMakeVariable]= format.
+]],
+		run = function (depldir, paths, variables)
+			local ok, err = dist.deploy(paths, depldir, variables)
+			if not ok then print(err) return 1 end
+			print("Make successful.")
+			return 0
+		end
+	},
+	-- Display info about dist
+	["info"] = {
+		help = [[
+Usage: luadist info (names)
+
+Info command will print information about the dists identified by (name) from repository.
+In case names are satisfied by multiple dist versions, only the most recent version will be displayed.
+]],
+		run = function (depldir, names)
+			local dists = dist.findDists(names)
+			if not dists then print("No dists found!") return 1 end
+			for i = 1, #dists do
+				local info = dists[i]
+				print("\n" .. info.name .. "-" .. info.version)
+				print("Description: " .. (info.desc or "not-available"))
+				print("Author: " .. (info.author or "not-available" ))
+				print("Maintainer: " .. (info.maintainer or "not-available" ))
+				print("Url: " .. (info.url or "not-available" ))
+				print("License: " .. (info.license or "not-available" ))
+			end
+			return 0
+		end
+	},
+}
+
+--- Handle commandline arguments
+local n, dir, command, names, variables = nil, nil, nil, {}, {}
+
+-- Determine deployment and command
+if not commands[arg[1]] and commands[arg[2]] then 
+	dir = arg[1]
+	command = arg[2]
+	n = 3
+elseif commands[arg[1]] then
+	dir = dist.getDeployment()
+	command = arg[1]	
+	n = 2
+else
+	-- No Command, print help
+	help()
+	return 0
+end
+	
+-- Collect settings, names and variables
+for i = n, #arg do
+	-- Collect names
+	if arg[i]:match("^%-") then
+		-- Arguments
+		if arg[i]:match("^%-D") then
+			local cvar, value = arg[i]:match("^%-D(.-)=(.*)")
+			variables[cvar] = value
+		elseif arg[i]:match("^%-") then
+			local var, value = arg[i]:match("^%-(.-)=(.*)")
+			-- Compare to variables from config.lua and change type accordingly
+			if config[var]~=nil then
+				-- Change to number
+				if type(config[var])=="number" then 
+					value = tonumber(value) 
+				end
+				-- If its a boolean, everything else but "false" counts as true.
+				if type(config[var])=="boolean" then
+					if value == "false" or value == "0" or value == "off" then value = false else value = true end
+				end
+				-- If its a table
+				if type(config[var])=="table" then
+					value = {value:match((value:gsub("[^,]*,", "([^,]*),")))}
+				end
+				-- Set the value
+				config[var] = value		
+			else
+				print("Invalid configuration option!", arg[i], "\n")
+				help()
+				return 1
+			end
+		else
+			print("Invalid argument!", arg[i], "\n")
+			help()
+			return 1
+		end
+	else
+		table.insert(names, arg[i])
+	end
+end
+
+-- Run command
+commands[command].run(dir, names, variables)
+return 0
+

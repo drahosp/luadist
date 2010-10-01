@@ -1,0 +1,547 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+    <title>Reference</title>
+    <link rel="stylesheet" href="../luadoc.css" type="text/css" />
+	<!--meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/-->
+</head>
+
+<body>
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+<div id="main">
+
+<div id="navigation">
+
+
+<h1>LuaDoc</h1>
+<ul>
+	
+	<li><a href="../index.html">Index</a></li>
+	
+</ul>
+
+
+<!-- Module list -->
+
+<h1>Modules</h1>
+<ul>
+
+	<li><strong>dist</strong></li>
+	
+	<li>
+		<a href="../modules/dist.dep.html">dist.dep</a>
+	</li>
+
+	<li>
+		<a href="../modules/dist.fetch.html">dist.fetch</a>
+	</li>
+
+	<li>
+		<a href="../modules/dist.log.html">dist.log</a>
+	</li>
+
+	<li>
+		<a href="../modules/dist.manifest.html">dist.manifest</a>
+	</li>
+
+	<li>
+		<a href="../modules/dist.package.html">dist.package</a>
+	</li>
+
+	<li>
+		<a href="../modules/dist.persist.html">dist.persist</a>
+	</li>
+
+	<li>
+		<a href="../modules/dist.sys.html">dist.sys</a>
+	</li>
+
+</ul>
+
+
+
+<!-- File list -->
+
+
+
+
+
+
+</div><!-- id="navigation" -->
+
+<div id="content">
+
+<h1>Module <code>dist</code></h1>
+
+<p>This file contains the basic functions of LuaDist. Feel free to use this exposed API in your projects if you need to deploy something automatically. Please note that everything may change in future releases. Terminology used: _dist_ - General reference to "package" in LuaDist, often synonymous with _info_. _info_ - Meta-data describing a _dist_. Collected from dist.info files inside dist archives. _manifest_ - A collection of sorted _info_ entries in a table. Sorted alphabetically by name and by version descending. _name_ - Refers to a string containing dist name and version constraints. Eg. "lua-5.1.4" or "luajit>=2" _deployment_ - A directory containing dists installed using LuaDist.</p>
+
+
+
+
+
+<h2>Functions</h2>
+<table class="function_list">
+
+	<tr>
+	<td class="name" nowrap><a href="#deploy">deploy</a>&nbsp;(src, deployment, variables)</td>
+	<td class="summary">Deploy a dist directly from source.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#filterManifest">filterManifest</a>&nbsp;(list, constraints)</td>
+	<td class="summary">Filter dist manifests using constraint functions.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#findDists">findDists</a>&nbsp;(names, manifest, name)</td>
+	<td class="summary">Find dists in manifest by name.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#getDeployed">getDeployed</a>&nbsp;(deployment)</td>
+	<td class="summary">Get all deployed dists in the target dir, this will also list dists provided by other dists.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#getDeployment">getDeployment</a>&nbsp;()</td>
+	<td class="summary">Get deployment directory.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#getDeps">getDeps</a>&nbsp;(names, manifest)</td>
+	<td class="summary">Collect dependencies.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#getInstalled">getInstalled</a>&nbsp;(deployment)</td>
+	<td class="summary">Get all installed dists from deployment directory.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#getManifest">getManifest</a>&nbsp;(repositories)</td>
+	<td class="summary">Get contents of repository or a list of repositories.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#install">install</a>&nbsp;(names, deployment, manifest, variables, name)</td>
+	<td class="summary">Install dist by name.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#pack">pack</a>&nbsp;(names, deployment, dest, dist)</td>
+	<td class="summary">Pack a deployed dist.</td>
+	</tr>
+
+	<tr>
+	<td class="name" nowrap><a href="#remove">remove</a>&nbsp;(names, deployment, dist)</td>
+	<td class="summary">Remove a deployed dist.</td>
+	</tr>
+
+</table>
+
+
+
+
+
+
+<br/>
+<br/>
+
+
+
+<h2><a name="functions"></a>Functions</h2>
+<dl class="function">
+
+
+
+<dt><a name="deploy"></a><strong>deploy</strong>&nbsp;(src, deployment, variables)</dt>
+<dd>
+Deploy a dist directly from source. _deploy_ will install; and in case of source dists, build a dist from source path. Deployment will automatically fetch from remote URLs and unpack dist or zip files into deploymemt. Variables can contain additional CMake variables to be used when building source dists. 
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  src: string: Path to the dist directory to make/deploy or nil to use current directory.
+	</li>
+	
+	<li>
+	  deployment: string: Deployment directory to install the dist into. If nil LuaDist directory is used.
+	</li>
+	
+	<li>
+	  variables: table: Table of key value pairs that can be used to set additional CMake variables for source dists.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+ok, log: Returns true on success. nil on error and log message.
+
+
+
+</dd>
+
+
+
+
+<dt><a name="filterManifest"></a><strong>filterManifest</strong>&nbsp;(list, constraints)</dt>
+<dd>
+Filter dist manifests using constraint functions. _filterManifest_ is used to remove dists from dist manifests that don't satisfy conditions. Conditions are specified using a table of functions. Functions are named after the attribute they check and return true if an argument satisfies its condition.  When constraint are not defined a default set of constraints is used. These constraints filter out dists not suitable for the architecture LuaDist is running on. More specifically, only dists of arch "Universal" or of arch equal to cfg.arch and of type "all" or type equal to cfg.type are preserved. Additionally when source dists are enabled in configuration this will include dists of type equal to "source".  In case no manifest is specified _filterManifest_ will automatically collect dist manifests from default repositories using _getManifest_. 
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  list: table: Dist list or manifest to filter. By default all dists collected from cfg.repo will be filtered.
+	</li>
+	
+	<li>
+	  constraints: table: Table of constraint function. Key determines what dist attribute is checked while the value is the actual constraint test written as a function. By default dists are filtered for correct arch-type.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+manifest: Table containing collections of filtered dists.
+
+
+
+</dd>
+
+
+
+
+<dt><a name="findDists"></a><strong>findDists</strong>&nbsp;(names, manifest, name)</dt>
+<dd>
+Find dists in manifest by name. _findDists_ will find all dists in manifest that satisfy conditions in the name string. Name contains dist name to search for and a set of optional version constraints. For example searching for "lua-5.1.4" will find all dists of name "lua" and version "5.1.4". Searching for version ranges is done using sets of constraints eg. "luajit >= 2.0 < 3.0". For more information, limitations and use of the constraint system please see LuaDist documentation. 
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  names: 
+	</li>
+	
+	<li>
+	  manifest: string: Dist manifest to search through.
+	</li>
+	
+	<li>
+	  name: string: String specifying the dist to find, version constraints can be used. Case sensitive.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+dist, log: List of matching dists. Returns nil on error and log message.
+
+
+
+</dd>
+
+
+
+
+<dt><a name="getDeployed"></a><strong>getDeployed</strong>&nbsp;(deployment)</dt>
+<dd>
+Get all deployed dists in the target dir, this will also list dists provided by other dists. _getDeployed_ will collect all deployed dists inside a deployment directory. This inludes entries that simulate provided dists which act as dependency satisfaction for dists during installation.  Integration with host package managers can be achieved by providing a list of modules already installed directly to the host system. The list can be edited directly by the user in configuration. 
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  deployment: string: Path to deployment directory. If not specified the deployment LuaDist is running in will be used.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+manifest: Table containing collections of deployed dists.
+
+
+
+</dd>
+
+
+
+
+<dt><a name="getDeployment"></a><strong>getDeployment</strong>&nbsp;()</dt>
+<dd>
+Get deployment directory.
+
+
+
+
+
+
+
+<h3>Return value:</h3>
+path: Full path to the LuaDist install directory
+
+
+
+</dd>
+
+
+
+
+<dt><a name="getDeps"></a><strong>getDeps</strong>&nbsp;(names, manifest)</dt>
+<dd>
+Collect dependencies. _getDeps_ is the magic function where dependency resolving happens. This function handles multiple names for which it computes the best possible set of dists that satisfy all the names. It consideres provided dists, conflicts and dependencies of each candidate dist and avoids dependency loops. It may not be very elegant or efficient, contributions welcome.  The algorithm relies on sequential satisfaction of names. For each name it tries to determine best possible candidate and tries to install its dependencies and rest of the names list. If dependencies fail another candidate is checked untill all names check out or candidates run out. Provides are faked by injecting dists into manifest and replaced before return. 
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  names: string or table: Names to compute dependencies for.
+	</li>
+	
+	<li>
+	  manifest: table: Manifest of dists to select dependencies from, needs to be sorted.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+
+
+</dd>
+
+
+
+
+<dt><a name="getInstalled"></a><strong>getInstalled</strong>&nbsp;(deployment)</dt>
+<dd>
+Get all installed dists from deployment directory. _getInstalled_ will collect all installed dists inside a deployment directory. These represent installed dists; provided dists are not included, see _getDeployed_ if you need a provided dists too. 
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  deployment: string: Path to deployment directory. If not specified the deployment LuaDist is running in will be used.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+manifest: Table containing collections of installed dists.
+
+
+
+</dd>
+
+
+
+
+<dt><a name="getManifest"></a><strong>getManifest</strong>&nbsp;(repositories)</dt>
+<dd>
+Get contents of repository or a list of repositories. _getManifest_ is used to fetch or generate collections of dist.info entries from URIs, system paths and on-line repositories. Returned dist manifests are not filtered and may not be appropriate for installation, see _filterManifest_ for this purpose.  Dist information is gathered by collecting dist.info entries from dist.manifest file in case an URL to on-line repository is given. System paths are searched for dist.info files on demand and do extracted dists can be used for local repositories, this is handy for bootstrap and development of multiple interconnected dists. Zip archives and dists are peeked into on demand and in case it contains dist.info entry its added to the manifest.  In case of multiple repositories, first repository always has priority. Dists are ordered by repository, name and version. Every item is checked, malformed entries are removed. 
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  repositories: string or table: Path or URL of a repository or repositories. By default cfg.repo is used if argument is not defined.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+manifest: Table containing collections of available dists.
+
+
+
+</dd>
+
+
+
+
+<dt><a name="install"></a><strong>install</strong>&nbsp;(names, deployment, manifest, variables, name)</dt>
+<dd>
+Install dist by name. _install_ is capable to install dists from various sources and of both source and binary type. Sources can be accumulated into install lists in which case LuaDist will install the sources in sequence. Sources supported by the command currently include: name, path and URL to .dist and .zip, path to unpacked dist and dist.info table. 
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  names: 
+	</li>
+	
+	<li>
+	  deployment: string: Deployment directory to install into. Leave undefined for current deployment directory.
+	</li>
+	
+	<li>
+	  manifest: table: Manifest of dists used to search for sources and resolve dependencies. Leave undefined for default repositories.
+	</li>
+	
+	<li>
+	  variables: table: Table of key value pairs that can be used to set additional CMake variables for source dists.
+	</li>
+	
+	<li>
+	  name: string: Package to install identified by name which can include version constraints. Case sensitive.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+ok, log: Returns true on success. nil on error and log message.
+
+
+
+</dd>
+
+
+
+
+<dt><a name="pack"></a><strong>pack</strong>&nbsp;(names, deployment, dest, dist)</dt>
+<dd>
+Pack a deployed dist. _pack_ will pack specified dist from deployment deployment and generate .dist archives in dest. When no name is specified all dists will be packed. 
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  names: 
+	</li>
+	
+	<li>
+	  deployment: string: Deployment directory to uninstall from, nil for default LuaDist directory.
+	</li>
+	
+	<li>
+	  dest: string: Optional destination for the result
+	</li>
+	
+	<li>
+	  dist: string or table: Dist name or info to uninstall.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+ok, log: Returns true on success. nil on error and log message.
+
+
+
+</dd>
+
+
+
+
+<dt><a name="remove"></a><strong>remove</strong>&nbsp;(names, deployment, dist)</dt>
+<dd>
+Remove a deployed dist. _remove_ will delete specified dist from deployment. When no name is specified, the whole deployment directory will be removed. WARNING: Calling "luadist remove" will instruct LuaDist to commit suicide. 
+
+
+<h3>Parameters</h3>
+<ul>
+	
+	<li>
+	  names: 
+	</li>
+	
+	<li>
+	  deployment: string: Deployment directory to uninstall from, nil for default LuaDist directory.
+	</li>
+	
+	<li>
+	  dist: string or table: Dist name or info to uninstall.
+	</li>
+	
+</ul>
+
+
+
+
+
+
+<h3>Return value:</h3>
+ok, log: Returns true on success. nil on error and log message.
+
+
+
+</dd>
+
+
+</dl>
+
+
+
+
+
+
+</div> <!-- id="content" -->
+
+</div> <!-- id="main" -->
+
+<div id="about">
+	<p><a href="http://validator.w3.org/check?uri=referer"><img src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0!" height="31" width="88" /></a></p>
+</div> <!-- id="about" -->
+
+</div> <!-- id="container" -->	
+</body>
+</html>
