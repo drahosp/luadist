@@ -44,10 +44,8 @@ repo = {
 	--- Use local repo to speed things up when re-deploying
 	-- "file://" .. root .. "/dist", 
 
-	--- Stable dists
-	-- "http://dists.luadist.org/Incoming",					-- Dists submitted for inclusion. WARNING: These need evaluation, use at own risk.
-	"http://dists.luadist.org/" .. arch .. "-" .. type, 	-- Default repo for binary dists. NOTE: Notice the repositories are arch/type dependent.
-	"http://dists.luadist.org/Universal-source", 			-- Default repo for source dists
+	--- Official repo
+	"http://github.com/LuaDist/Repository/raw/master/"
 }
 
 --- !!! Do not edit below unless you know what you are doing. !!!
@@ -61,25 +59,29 @@ variables	= {
 	-- CMake specific setup
 	CMAKE_GENERATOR			= "@CMAKE_GENERATOR@",
 	CMAKE_BUILD_TYPE		= "@CMAKE_BUILD_TYPE@",
- 	CMAKE_BUILD_TOOL		= "@CMAKE_BUILD_TOOL@",
 
 	-- OSX specific
 	CMAKE_OSX_ARCHITECTURES		= "@CMAKE_OSX_ARCHITECTURES@",
-	-- CMAKE_ASM_FLAGS		= "-arch i386", -- Not set up by cmake automatically
 }
 
 -- Commands to use for building. (CMake 2.8+)
 cmake 		= "cmake"
-cmakeDebug 	= "cmake -DCMAKE_VERBOSE_MAKEFILE=true -DCMAKE_BUILD_TYPE=Debug"
+cmakeDebug 	= cmake .. " -DCMAKE_VERBOSE_MAKEFILE=true -DCMAKE_BUILD_TYPE=Debug"
 ctest		= "ctest"
-ctestDebug	= "ctest"
-make		= "cmake --build . --target install --clean-first"
-makeDebug	= "cmake --build . --target install --clean-first"
+ctestDebug	= ctest
+make		= "make install"
+makeDebug	= make
+
+-- Use mingw32-make when using mingw
+if (variables.CMAKE_GENERATOR == "MinGW Makefiles") then
+	make = "mingw32-make install"
+	makeDebug = make
+end
 
 -- Add -j option to make in case of unix makefiles to speed up builds
 if (variables.CMAKE_GENERATOR == "Unix Makefiles") then
-	make = make .. " -- -j6"
-	makeDebug = makeDebug .. " -- -j6"
+	make = make .. " -j"
+	makeDebug = makeDebug .. " -j"
 end
 
 -- Function used to display messages, warnings and errors

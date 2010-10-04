@@ -103,7 +103,9 @@ function get(src, variables)
 		if dist then
 			-- Dist is ok
 			checked = checked or {}
-			dist.path = sys.path(src:gsub("file://",""), dist.path)
+			if not string.match(dist.path, "^http://") then 
+				dist.path = sys.path(src:gsub("file://",""), dist.path)
+			end
 			table.insert(checked, dist)
 		else
 			-- Malformed dist

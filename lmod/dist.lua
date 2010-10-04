@@ -532,8 +532,8 @@ function deploy(src, deployment, variables)
 	end
 
 	-- Set CMake search paths for libs and headers to the deployment directory
-	vars.CMAKE_INCLUDE_PATH = sys.path(vars.CMAKE_INCLUDE_PATH) or "" .. ";" .. sys.path(deployment, "include")
-	vars.CMAKE_LIBRARY_PATH = sys.path(vars.CMAKE_LIBRARY_PATH) or "" .. ";" .. sys.path(deployment, "lib")
+	vars.CMAKE_INCLUDE_PATH = table.concat({ sys.path(vars.CMAKE_INCLUDE_PATH) or "", sys.path(deployment, "include")}, ";")
+	vars.CMAKE_LIBRARY_PATH = table.concat({ sys.path(vars.CMAKE_LIBRARY_PATH) or "", sys.path(deployment, "lib"), sys.path(deployment, "bin")}, ";")
 	
 	-- Build and deploy the package
 	local bin, err = package.build(src, deployment, vars)
