@@ -405,7 +405,7 @@ if config.arch == "Windows" then
 
 		local startScript = [[@echo off
 echo This file will set up environment variables needed to run LuaDist from its deployment directory.
-
+setlocal
 set CALL_DIR=%CD%
 cd /D %~dp0
 set DIST_ROOT=%CD:\=/%
@@ -416,6 +416,7 @@ set LUA_CPATH=%DIST_ROOT%/share/lua/cmod/?.dll;%LUA_CPATH%
 set LUA_PATH=?.lua;%DIST_ROOT%/share/lua/lmod/?.lua;%DIST_ROOT%/share/lua/lmod/?/init.lua;%LUA_PATH%
 
 %*
+endlocal
 ]]
 		out:write(startScript)
 		out:close()
