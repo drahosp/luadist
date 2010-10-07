@@ -404,7 +404,6 @@ if config.arch == "Windows" then
 		if not out then return nil, "Cannot write startup script in " .. dest .. "." end
 
 		local startScript = [[@echo off
-echo This file will set up environment variables needed to run LuaDist from its deployment directory.
 setlocal
 set CALL_DIR=%CD%
 cd /D %~dp0
@@ -415,8 +414,19 @@ set PATH=%DIST_ROOT%/bin;%DIST_ROOT%/lib;%PATH%
 set LUA_CPATH=%DIST_ROOT%/share/lua/cmod/?.dll;%LUA_CPATH%
 set LUA_PATH=?.lua;%DIST_ROOT%/share/lua/lmod/?.lua;%DIST_ROOT%/share/lua/lmod/?/init.lua;%LUA_PATH%
 
+if "%*" == "" (
+echo ========== LuaDist ]]..config.version..[[ ===========
+echo Setting up LuaDist environment.
+echo Type "luadist" to for the LuaDist CLI
+echo Type "lua" for the Lua CLI
+echo =====================================
+cmd /K
+)
+
 %*
+
 endlocal
+
 ]]
 		out:write(startScript)
 		out:close()
