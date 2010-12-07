@@ -1,7 +1,7 @@
 --- This file is part of LuaDist project
 
 name = "luadist"
-version = "1.0.0"
+version = "1.0.1"
 
 desc = "Simple Lua Module Development, Distribution and Deployment Tool."
 maintainer = "Peter Drahoš"
@@ -14,6 +14,7 @@ depends = {
 	"md5 >= 1.1",
 	"luasocket >= 2.0.2",
 	"luafilesystem >= 1.4.1",
+	"luasec >= 0.4",
 	"unzip >= 6.0"
 }
 

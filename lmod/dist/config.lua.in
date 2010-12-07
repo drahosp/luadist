@@ -6,7 +6,7 @@ local _G = _G
 module ("dist.config")
 
 -- LuaDist Install Identification
-version 		= "1.0.0"				-- Current LuaDist version
+version 		= "1.0.1"				-- Current LuaDist version
 arch			= "@DIST_ARCH@"			-- Host architecture
 type			= "@DIST_TYPE@"			-- Host type
 
@@ -45,7 +45,7 @@ repo = {
 	-- "file://" .. root .. "/dist", 
 
 	--- Official repo
-	"http://github.com/LuaDist/Repository/raw/master/"
+	"https://github.com/LuaDist/Repository/raw/master/"
 }
 
 --- !!! Do not edit below unless you know what you are doing. !!!
@@ -80,8 +80,8 @@ end
 
 -- Add -j option to make in case of unix makefiles to speed up builds
 if (variables.CMAKE_GENERATOR == "Unix Makefiles") then
-	make = make .. " -j"
-	makeDebug = makeDebug .. " -j"
+	make = make .. " -j4"
+	makeDebug = makeDebug .. " -j4"
 end
 
 -- Function used to display messages, warnings and errors
