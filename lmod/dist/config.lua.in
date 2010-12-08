@@ -2,7 +2,12 @@
 -- The contents of this file is automaticaly generated.
 -- Feel free to edit to suit your needs.
 
-local _G = _G
+local write = io.write
+local flush = io.flush
+local getenv = os.getenv
+local path = _PATH
+if path then path = path .. "/.." end
+
 module ("dist.config")
 
 -- LuaDist Install Identification
@@ -13,7 +18,7 @@ type			= "@DIST_TYPE@"			-- Host type
 -- Behavior
 binary	= true		-- Use binary dists.
 source	= true		-- Use source dists (requires CMake and MinGW/gcc/VS to be installed).
-link	= @DIST_SYMLINKS@	-- Use symlinks. (Windows and Cygwin need false here)
+link	= false	    -- Use symlinks. (Windows and Cygwin need false here)
 start	= true		-- Create environment start script in deployments.
 test	= false		-- Run tests before install.
 verbose	= false		-- Print verbose output.
@@ -21,6 +26,7 @@ debug	= false		-- Start debug mod. Will keep temporary directories too.
 proxy 	= false		-- HTTP proxy to use. False for none, otherwise the proxy address.
 timeout = 10		-- HTTP fetch timeout
 cache 	= 5*60		-- Cache timeout
+rpath   = true      -- Build libraries linked relatively (no need to set PATH/(DY)LD_LIBRARY_PATH)
 
 --- Packages provided by host
 -- If you install any packages manually or using your host OS installer you can add the name-version
@@ -28,11 +34,11 @@ provides = {
 --	"unzip-6.0" 	-- Is available on OSX and most Unix/Linux based installs.
 }
 
--- Paths to deployment, temporary dit and log file
-root			= (_G.os.getenv("DIST_ROOT") or "/"):gsub("\\","/")		-- Current deployment directory (Directory LuaDist is in)
-temp			= root .. "/tmp"		-- Full path temp
-log			= temp .. "/luadist.log" 	-- Log file
-dists			= "share/luadist/dists"
+-- Paths
+root    = path or getenv("DIST_ROOT") or "/"
+temp	= root .. "/tmp"		-- Full path temp
+log		= temp .. "/luadist.log" 	-- Log file
+dists	= "share/luadist/dists"
 
 -- URLs of repositories to search for dists. http:// or file:// URLs are cecognized atm.
 repo = {
@@ -64,29 +70,32 @@ variables	= {
 	CMAKE_OSX_ARCHITECTURES		= "@CMAKE_OSX_ARCHITECTURES@",
 }
 
--- Commands to use for building. (CMake 2.8+)
-cmake 		= "cmake"
-cmakeDebug 	= cmake .. " -DCMAKE_VERBOSE_MAKEFILE=true -DCMAKE_BUILD_TYPE=Debug"
-ctest		= "ctest"
-ctestDebug	= ctest
-make		= "make install"
-makeDebug	= make
-
--- Use mingw32-make when using mingw
-if (variables.CMAKE_GENERATOR == "MinGW Makefiles") then
-	make = "mingw32-make install"
-	makeDebug = make
+-- Force CMake to use rpath/install_name
+if rpath then
+    variables.CMAKE_SKIP_BUILD_RPATH = "FALSE"
+    variables.CMAKE_BUILD_WITH_INSTALL_RPATH = "FALSE"
+    variables.CMAKE_INSTALL_RPATH = "$ORIGIN/../lib"
+    variables.CMAKE_INSTALL_RPATH_USE_LINK_PATH = "TRUE"
+    variables.CMAKE_INSTALL_NAME_DIR = "@executable_path/../lib"
 end
+
+-- Commands to use for building. (CMake 2.8+)
+cmake           = "cmake"
+cmakeDebug      = "cmake -DCMAKE_VERBOSE_MAKEFILE=true -DCMAKE_BUILD_TYPE=Debug"
+ctest           = "ctest"
+ctestDebug      = "ctest"
+make            = "cmake --build . --target install --clean-first"
+makeDebug       = "cmake --build . --target install --clean-first"
 
 -- Add -j option to make in case of unix makefiles to speed up builds
 if (variables.CMAKE_GENERATOR == "Unix Makefiles") then
-	make = make .. " -j4"
-	makeDebug = makeDebug .. " -j4"
+        make = make .. " -- -j6"
+        makeDebug = makeDebug .. " -- -j6"
 end
 
 -- Function used to display messages, warnings and errors
 message = function(...)
-	_G.io.write(...)
-	_G.io.write("\n")
-	_G.io.flush()
+        write(...)
+        write("\n")
+        flush()
 end
