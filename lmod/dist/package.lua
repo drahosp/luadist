@@ -6,7 +6,7 @@
 -- The following functions are provided:
 -- unpack - fetch and unpack a dist
 -- build - compile a source dist
--- deploy - install a dist into deployment dir and/or fix links.
+-- deploy - install a dist into deployment
 -- pack - create dist from package
 -- delete - delete package
 
@@ -142,55 +142,29 @@ function deploy(dist, depl)
         true, "Skipping, already deployed"
     end
 
-	-- Copy to install dir, if the dist is already there then just reactivate the links
+	-- Copy to install dir
 	sys.makeDir(depl)
 	sys.makeDir(distPath)
 	
 	-- Collect files to process
 	local files = sys.list(dist)
 
-	if config.link then
-		-- Symlink based deployment
-		for i = 1, #files do
-			local file = files[i]
-			if file~="dist.info" then
-				local path = sys.path(dist, file)
-				-- Create directories in depl and dist directory
-				if sys.isDir(path) then
-					local ok, err = sys.makeDir(sys.path(distPath, file))
-					if not ok then return nil, "Failed to install " .. dist .. "/" .. file .. " to " .. distPath end
-					local ok, err = sys.makeDir(sys.path(depl, file))
-					if not ok then return nil, "Failed to install " .. dist .. "/" .. file .. " to " .. depl end
-				-- Copy files to dist dir and link them to depl
-				else
-					local ok, err = sys.copy(sys.path(dist, file), sys.path(distPath, file))
-					if not ok then return nil, "Failed to install " .. dist .. "/" .. file .. " to " .. distPath end
-					
-					-- Relatively link file
-					local file = string.gsub(file, "^/", "")
-					local ok, err = sys.relLink(sys.path(distRel, file), file, depl)
-					if not ok then return nil, "Failed to link " .. distRel .. "/" .. file .. " to deployment" end
-				end
+	-- Simple copy deployment
+	for i = 1, #files do
+		local file = files[i]
+		if file~="dist.info" then
+			local path = sys.path(dist, file)
+			-- Create directory in depl
+			if sys.isDir(path) then
+				local ok, err = sys.makeDir(sys.path(depl, file))
+				if not ok then return nil, "Failed to install " .. dist .. "/" .. file .. " to " .. depl end
+			-- Copy files to depl
+			else
+				local ok, err = sys.copy(sys.path(dist, file), sys.path(depl, file))
+				if not ok then return nil, "Failed to install " .. dist .. "/" .. file .. " to " .. depl end
 			end
 		end
-	else
-		-- Simple copy deployment
-		for i = 1, #files do
-			local file = files[i]
-			if file~="dist.info" then
-				local path = sys.path(dist, file)
-				-- Create directory in depl
-				if sys.isDir(path) then
-					local ok, err = sys.makeDir(sys.path(depl, file))
-					if not ok then return nil, "Failed to install " .. dist .. "/" .. file .. " to " .. depl end
-				-- Copy files to depl
-				else
-					local ok, err = sys.copy(sys.path(dist, file), sys.path(depl, file))
-					if not ok then return nil, "Failed to install " .. dist .. "/" .. file .. " to " .. depl end
-				end
-			end
-		end		
-	end
+	end		
 	
 	-- Modify and save dist.info
 	info.files = files

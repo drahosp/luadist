@@ -11,15 +11,13 @@ if path then path = path .. "/.." end
 module ("dist.config")
 
 -- LuaDist Install Identification
-version 		= "1.0.1"				-- Current LuaDist version
+version 		= "1.1.0"				-- Current LuaDist version
 arch			= "@DIST_ARCH@"			-- Host architecture
 type			= "@DIST_TYPE@"			-- Host type
 
 -- Behavior
 binary	= true		-- Use binary dists.
 source	= true		-- Use source dists (requires CMake and MinGW/gcc/VS to be installed).
-link	= false	    -- Use symlinks. (Windows and Cygwin need false here)
-start	= true		-- Create environment start script in deployments.
 test	= false		-- Run tests before install.
 verbose	= false		-- Print verbose output.
 debug	= false		-- Start debug mod. Will keep temporary directories too.

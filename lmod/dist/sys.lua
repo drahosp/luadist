@@ -188,29 +188,6 @@ local function pathLen(dir)
 	return len - 1
 end
 
---- Relatively Link file or directory contents to destination.
--- @param src string: Path or file to link.
--- @param dest string: Destination to link to.
--- @param from string: Directory to link from, by default curDir.
--- @return ok, log: true on success, false on failure and log message.
-function relLink(src, dest, from)
-	assert(type(src)=="string", "link argument 'src' is not a string.")
-	assert(type(dest)=="string", "link argument 'dest' is not a string.")
-	assert(not from or type(from)=="string", "link argument 'depl' is not a string.")
-	
-	-- If links are disabled .. simply copy
-	if not config.link then return copy(path(from, src), path(from, dest)) end
-	
-	-- Src needs to be adjusted for dest depth
-	src = string.rep("../", pathLen(dest)) .. src
-	from = from or curDir()
-	
-	-- Link
-	local ok, err = execute("cd " .. Q(from) .. " && ln -f -s", src, dest)
-	if not ok then return nil, "Failed linking " .. src .. " to " .. dest .. " from " .. from .. ".\n" .. err end
-	return true
-end
-
 --- Delete a file or a directory and all its contents.
 -- For safety, this only accepts absolute paths.
 -- @param dir string: Pathname of the file or directory to delete
@@ -340,41 +317,6 @@ function getZipFile(zipfile, file)
 	return content 
 end
 
---- Create environment startup script.
--- @param dest string: Dir to generate the file in.
--- @return ok, log: true on success, false on failure and log message.
-function makeStart(dest)
-	assert(type(dest)=="string", "dest argument 'dest' is not a string.")
-	
-	-- Open file
-	local file = path(dest, "dist")
-	local out = io.open(file, "w")
-	if not out then return nil, "Cannot write startup script in " .. dest .. "." end
-	
-	local startScript = [[#!/bin/sh
-export DIST_ROOT=`dirname "$(cd ${0%/*} && echo $PWD/${0##*/})"`
-
-# Set up environment paths
-export PATH="$DIST_ROOT/bin:$DIST_ROOT/lib:$PATH"
-export DYLD_LIBRARY_PATH="$DIST_ROOT/lib:$DYLD_LIBRARY_PATH"
-export LD_LIBRARY_PATH="$DIST_ROOT/lib:$LD_LIBRARY_PATH"
-export LUA_CPATH="$DIST_ROOT/share/lua/cmod/?.so;$DIST_ROOT/share/lua/cmod/?.dll;$DIST_ROOT/share/lua/cmod/?.dylib;$LUA_CPATH"
-export LUA_PATH="?.lua;$DIST_ROOT/share/lua/lmod/?.lua;$DIST_ROOT/share/lua/lmod/?/init.lua;$LUA_PATH"
-
-if [ $# -eq 0 ]
-then
-        # Start shell with new environment
-        echo Setting up environment variables for LuaDist.
-        "$SHELL"
-else
-        # Start the supplied command instead
-        "$@"
-fi]]
-	out:write(startScript)
-	out:close()
-	return execute("chmod +x ", file)
-end
-
 --- Override different functions for Windows
 if config.arch == "Windows" then 
 
@@ -390,48 +332,6 @@ if config.arch == "Windows" then
 		end
 		-- URLs and anything else
 		return '"' .. arg:gsub('"', '\\"') .. '"'
-	end
-
-	--- Create environment startup script (Windows).
-	-- @param dest string: Dir to generate the file in.
-	-- @return ok, log: true on success, false on failure and log message.
-	function makeStart(dest)
-		assert(type(dest)=="string", "dest argument 'dest' is not a string.")
-
-		-- Open file
-		local file = path(dest, "dist.bat")
-		local out = io.open(file, "w")
-		if not out then return nil, "Cannot write startup script in " .. dest .. "." end
-
-		local startScript = [[@echo off
-setlocal
-set CALL_DIR=%CD%
-cd /D %~dp0
-set DIST_ROOT=%CD:\=/%
-cd /D %CALL_DIR%
-
-set PATH=%DIST_ROOT%/bin;%DIST_ROOT%/lib;%PATH%
-set LUA_CPATH=%DIST_ROOT%/share/lua/cmod/?.dll;%LUA_CPATH%
-set LUA_PATH=?.lua;%DIST_ROOT%/share/lua/lmod/?.lua;%DIST_ROOT%/share/lua/lmod/?/init.lua;%LUA_PATH%
-
-if "%*" == "" (
-echo ========== LuaDist ]]..config.version..[[ ===========
-echo Setting up LuaDist environment.
-echo Type "luadist" to for the LuaDist CLI
-echo Type "lua" for the Lua CLI
-echo =====================================
-cmd /K
-)
-
-%*
-
-endlocal
-
-]]
-		out:write(startScript)
-		out:close()
-		
-		return true, "Environment startup script created."
 	end
 
 	--- Move a file from one location to another (Windows).

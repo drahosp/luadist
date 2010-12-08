@@ -14,9 +14,9 @@
   ------------
   LuaDist relies on CMake (www.cmake.org) for building. The build process
   consists of two stages. First stage in the CMake based bootstrap that will
-  build and install all needed Lua components. Second stage uses the LuaDist
-  install from bootstrap to build the final release. This process is needed to
-  ensure LuaDist remains self updateable and endorses its correct deployment
+  build and install all needed components. Second stage uses the bootstrap 
+  environment to build and install the final release. This process is needed to
+  ensure LuaDist remains self update-able and endorses its correct deployment
   structure.
 
   To build LuaDist on Unix (including Linux, OS X and Cygwin) systems simply
@@ -30,29 +30,32 @@
 
 * Running
   -------
-  To use LuaDist a few environment variables need to be set up. For this purpose
-  a "dist" or "dist.bat" script is generated in deployment directories by
-  default. Running the script will set up all needed environment variables after
-  which you can use the provided packages. Alternatively you can add the variables
-  to your profile manually on startup to avoid using the script entirely.
+  LuaDist installs to a standalone directory and should be able to execute on
+  most systems supported systems without the need to set up any environment.
 
   To invoke the luadist CLI simply use:
-	$ ./dist
-	LuaDist-1.0.0$ luadist
+	$ cd luadist/bin
+	$ ./lua luadist
 
-  Commands can also be run directly using:
-	$ ./dist lua
+  Any other binaries distributed using LuaDist can also be invoked directly
+	$ cd luadist/bin
+	$ ./luac
+	
+  If you experience problems with dynamic libraries or missing Lua modules you
+  can ensure LuaDist finds them by providing following environment variables:
+	$ export DIST_ROOT=/full/path/to/luadist
+	$ export LD_LIBRARY_PATH=$DIST_ROOT/lib
+	$ cd $DIST_ROOT/bin
+	$ ./lua luadist
 
 * Compatibility
   -------------
   LuaDist was designed to support Unix/Linux, Mac and Windows
-  installs. Windows and Cygwin support is limited by the lack of support for
-  symlinks. On these systems files are copied directly into the deployment 
-  directory instead and are therefore not available inside "dists" subdirectory.
+  installs.
 
   We are testing on the following operating systems:
-	Ubuntu 10.04, amd64 and x86
-	OS X 10.6, intel
+	Ubuntu 10.10, amd64 and x86
+	OS X 10.6, intel i386 and x86_64
 	Windows 7 with MinGW compiler, 32bit
 	Windows 7 with MSVC compilers, 32bit
 	Cygwin on Windows 7, 32bit

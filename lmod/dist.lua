@@ -445,7 +445,6 @@ function deploy(src, deployment, variables)
 
 	-- Make sure deployment exists and create startup script		
 	sys.makeDir(deployment)
-	if cfg.start then sys.makeStart(deployment) end
 
 	-- Default variables can be omited so make sure we have a table
 	variables = variables or {}
