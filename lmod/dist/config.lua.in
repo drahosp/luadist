@@ -5,7 +5,9 @@
 local write = io.write
 local flush = io.flush
 local getenv = os.getenv
-local path = _PATH
+
+// Look for _PROGDIR by default
+local path = _PROGDIR
 if path then path = path .. "/.." end
 
 module ("dist.config")
