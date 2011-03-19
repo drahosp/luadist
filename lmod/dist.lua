@@ -484,7 +484,7 @@ function deploy(src, deployment, variables)
 
 	-- We have a dist
 	local infoName = info.name .. "-" .. info.version
-	log.message("Deploying " .. infoName)
+	log.message("Processing " .. infoName)
 	
 	-- Check the package contents for CMakeLists.txt, that would mean the package is of type source.
 	if sys.exists(sys.path(src, "CMakeLists.txt")) then
@@ -520,7 +520,7 @@ function deploy(src, deployment, variables)
 	end
 
 	--- We have a source dist.
-	log.message("Compiling ...")
+	log.message("Building ...")
 	-- Setup variables by mergeing cfg.variables and variables
 	local vars = {}
 	for k,v in pairs(cfg.variables or {}) do

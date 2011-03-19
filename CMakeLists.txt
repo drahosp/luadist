@@ -1,18 +1,42 @@
-# Copyright (C) 2007-2010 LuaDist.
+# Copyright (C) 2007-2011 LuaDist.
 # Created by Peter Drahoš
 # Redistribution and use of this file is allowed according to the terms of the MIT license.
 # For details see the COPYRIGHT file distributed with LuaDist.
 # Please note that the package source code is licensed under its own license.
 
-PROJECT (luadist NONE)
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-INCLUDE(dist.cmake)
+project ( luadist NONE )
+cmake_minimum_required ( VERSION 2.6 )
+include ( dist.cmake )
 
-CONFIGURE_FILE(lmod/dist/config.lua.in ${CMAKE_CURRENT_BINARY_DIR}/dist/config.lua @ONLY)
+## LuaDist settings
+# Host specific setup
+set ( DETECTED_TYPE ${CMAKE_SYSTEM_PROCESSOR} )
+set ( DETECTED_ARCH ${CMAKE_SYSTEM_NAME} )
 
-IF (NOT DIST_BOOTSTRAP)	
-	INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/dist/config.lua DESTINATION ${INSTALL_LMOD}/dist/ )
-	INSTALL(PROGRAMS luadist DESTINATION ${INSTALL_BIN})
-	INSTALL(DIRECTORY lmod/ DESTINATION ${INSTALL_LMOD} PATTERN ".git" EXCLUDE PATTERN "*.in" EXCLUDE)
-	INSTALL(FILES COPYRIGHT README DESTINATION ${INSTALL_DATA})
-ENDIF (NOT DIST_BOOTSTRAP)
+if ( CYGWIN )
+	# Make sure Cygwin uses correct arch and type.
+	set ( DETECTED_TYPE x86 )
+	set ( DETECTED_ARCH Cygwin )
+elseif ( MSVC )
+	set ( DETECTED_TYPE MSVC32 )
+endif ()
+
+set ( DIST_VERSION 1.0.0 )
+set ( DIST_TYPE ${DETECTED_TYPE} CACHE STRING "Host system type. PLEASE CHECK!" FORCE )
+set ( DIST_ARCH ${DETECTED_ARCH} CACHE STRING "Host system architecture. PLEASE CHECK!" FORCE )
+
+configure_file ( lmod/dist/config.lua.in ${CMAKE_CURRENT_BINARY_DIR}/dist/config.lua @ONLY )
+
+install_lua_executable ( luadist luadist )
+install_lua_module ( dist lmod/dist.lua )
+install_lua_module ( dist.dep lmod/dist/dep.lua )
+install_lua_module ( dist.fetch lmod/dist/fetch.lua )
+install_lua_module ( dist.log lmod/dist/log.lua )
+install_lua_module ( dist.manifest lmod/dist/manifest.lua )
+install_lua_module ( dist.package lmod/dist/package.lua )
+install_lua_module ( dist.persist lmod/dist/persist.lua )
+install_lua_module ( dist.sys lmod/dist/sys.lua )
+install_lua_module ( dist.config ${CMAKE_CURRENT_BINARY_DIR}/dist/config.lua )
+
+install_data ( COPYRIGHT README )
+install_doc ( doc/ )

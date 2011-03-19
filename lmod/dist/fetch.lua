@@ -168,7 +168,7 @@ local function getHTTPS(src)
     }
 
     local ok, err = https.request(request)
-    print(ok, err)
+
     if not ok then return nil, "Failed to get contents of " .. src .. " error: " .. err end
     return table.concat(contents)
 end
