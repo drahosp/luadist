@@ -70,9 +70,8 @@ variables	= {
 	DIST_ARCH                          = arch,
 	DIST_TYPE                          = type,
 	
-	-- Override lua paths
-	LUA_LDIR                           = "@LUA_LDIR@",
-	LUA_CDIR                           = "@LUA_CDIR@",
+	-- Set Lua root, this is recognized by the Lua/LuaJIT packages
+	LUA_ROOT                           = "!/../",
 	
 	-- CMake specific setup
 	CMAKE_GENERATOR                    = "@CMAKE_GENERATOR@",
