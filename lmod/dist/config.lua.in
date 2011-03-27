@@ -70,9 +70,6 @@ variables	= {
 	DIST_ARCH                          = arch,
 	DIST_TYPE                          = type,
 	
-	-- Set Lua root, this is recognized by the Lua/LuaJIT packages
-	LUA_ROOT                           = "!/../",
-	
 	-- CMake specific setup
 	CMAKE_GENERATOR                    = "@CMAKE_GENERATOR@",
 	CMAKE_BUILD_TYPE                   = "@CMAKE_BUILD_TYPE@",
