@@ -250,13 +250,9 @@ end
 local function getInfoNames(tbl) 
     local ret = {}
     tbl = tbl or {}
-    tbl = tbl[cfg.arch] or tbl
-    tbl = tbl[cfg.type] or tbl
-    for _, entry in pairs(tbl) do
-        if type(entry) == "string" then
-            table.insert(ret, entry)
-        end
-    end
+    for k,v in pairs(tbl) do if (type(v)=="string") then table.insert(ret, v) end end
+    for k,v in pairs(tbl[cfg.arch] or {}) do if (type(v)=="string") then table.insert(ret, v) end end
+    for k,v in pairs(tbl[cfg.type] or {}) do if (type(v)=="string") then table.insert(ret, v) end end
     return ret
 end
 
@@ -533,6 +529,7 @@ function deploy(src, deployment, variables)
 	-- Set CMake search paths for libs and headers to the deployment directory
 	vars.CMAKE_INCLUDE_PATH = table.concat({ sys.path(vars.CMAKE_INCLUDE_PATH) or "", sys.path(deployment, "include")}, ";")
 	vars.CMAKE_LIBRARY_PATH = table.concat({ sys.path(vars.CMAKE_LIBRARY_PATH) or "", sys.path(deployment, "lib"), sys.path(deployment, "bin")}, ";")
+	vars.CMAKE_PROGRAM_PATH = table.concat({ sys.path(vars.CMAKE_PROGRAM_PATH) or "", sys.path(deployment, "bin")}, ";")
 	
 	-- Build and deploy the package
 	local bin, err = package.build(src, deployment, vars)

@@ -377,6 +377,24 @@ else
 	help()
 	return 0
 end
+
+-- Helper split function for argument to table conversion
+function split(str, pat)
+    local t, fpat, last_end = {}, "(.-)" .. pat, 1
+    local s, e, cap = str:find(fpat, 1)
+    while s do
+        if s ~= 1 or cap ~= "" then
+            table.insert(t,cap)
+        end
+        last_end = e+1
+        s, e, cap = str:find(fpat, last_end)
+    end
+    if last_end <= #str then
+        cap = str:sub(last_end)
+        table.insert(t, cap)
+    end
+    return t
+end
 	
 -- Collect settings, names and variables
 for i = n, #arg do
@@ -400,7 +418,7 @@ for i = n, #arg do
 				end
 				-- If its a table
 				if type(config[var])=="table" then
-					value = {value:match((value:gsub("[^,]*,", "([^,]*),")))}
+					value = split( value, "," )
 				end
 				-- Set the value
 				config[var] = value		
