@@ -51,7 +51,7 @@ repo = {
 	-- "file://" .. root .. "/dist", 
 
 	--- Official repo
-	"https://raw.github.com/LuaDist/Repository/master/"
+	"https://github.com/LuaDist/Repository/raw/master/"
 }
 
 --- !!! Do not edit below unless you know what you are doing. !!!

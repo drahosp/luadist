@@ -180,19 +180,14 @@ return status\;
 }
 
 int main (int argc, char **argv) {
-int status;
 L=lua_open()\;
 lua_gc(L, LUA_GCSTOP, 0)\;
 luaL_openlibs(L)\;
 lua_gc(L, LUA_GCRESTART, 0)\;
 getargs(L, argv, 0)\;
 lua_setglobal(L, \"arg\")\;
-#ifdef LUA_PROGDIR
 // _PROGDIR global is only available when loadlib_rel.c is used in Lua
-status = luaL_dostring(L, \"return dofile ( (_PROGDIR or '.') .. '/${_source_name}.lua')\")\;
-#else
-status = luaL_dostring(L, \"return dofile ('${CMAKE_INSTALL_PREFIX}/${INSTALL_BIN}/${_source_name}.lua')\")\;
-#endif
+int status = luaL_dostring(L, \"return dofile ( (_PROGDIR or '.') .. '/${_source_name}.lua')\")\;
 report(L, status)\;
 lua_close(L)\;
 return status\;
