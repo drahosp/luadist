@@ -273,7 +273,7 @@ end
 -- @param name string: A string containing name and version constraints eg. "lua-5.1.4" or "luajit >= 1.0 < 2.0"
 -- @return string, string: Returns separated name and constraints
 function split(name)
-	    local cut = string.find(name, "[%s-=<>~]+%d")
+	    local cut = string.find(name, "[%s-=<>~]+%d") or string.find(name, "[%s-=<>~]+scm")
 	    if cut then
 	    		-- Cut the string and remove - from version if needed.
 	            return string.sub(name, 0, cut-1), string.gsub(string.sub(name, cut), "^[-%s]", "")

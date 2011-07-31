@@ -103,7 +103,7 @@ function get(src, variables)
 		if dist then
 			-- Dist is ok
 			checked = checked or {}
-			if not string.match(dist.path, "^http://") then 
+			if not string.match(dist.path, "^https?://") then
 				dist.path = sys.path(src:gsub("file://",""), dist.path)
 			end
 			table.insert(checked, dist)

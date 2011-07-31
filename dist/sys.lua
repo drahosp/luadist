@@ -277,7 +277,8 @@ end
 function zip(workdir, zipfile, ...)
 	assert (type(workdir)=="string", "zip argument 'workdir' is not a string.")
 	assert (type(zipfile)=="string", "zip argument 'zipfile' is not a string.")
-	return execute("cd " .. Q(workdir) .. " && zip -r", zipfile, ...)
+	return execute("cd " .. Q(workdir) .. " && "..config.root.."/bin/zip -r", zipfile, ...) or 
+		execute("cd " .. Q(workdir) .. " && zip -r", zipfile, ...)
 end
 
 --- Unpack an archive.
@@ -289,7 +290,8 @@ function unzip(archive, dest)
 	assert(type(dest) == "string", "unpack agrument 'dest' is not a string.")
 	local ok
 	if archive:match("%.zip$") or archive:match("%.dist$") then
-		ok = executeString("unzip " .. Q(archive) .. " -d " .. Q(dest))
+		ok = executeString(config.root.."/bin/unzip " .. Q(archive) .. " -d " .. Q(dest)) or
+			executeString("unzip " .. Q(archive) .. " -d " .. Q(dest))
 	end
 	if not ok then
 		return false, "Failed extracting."
@@ -307,7 +309,8 @@ function getZipFile(zipfile, file)
 	assert(type(file) == "string", "unpack agrument 'file' is not a string.")
 	
 	-- Try to get contents
-	local f, err = io.popen("unzip -cp " .. Q(zipfile) .. " " .. Q(file))
+	local f, err = io.popen(config.root.."/bin/unzip -cp " .. Q(zipfile) .. " " .. Q(file))	or
+		io.popen("unzip -cp " .. Q(zipfile) .. " " .. Q(file))
 	if not f then return false, "Failed to extract " .. file .. " from " .. zipfile end
 
 	-- Read result
