@@ -83,7 +83,9 @@ variables	= {
 
 	-- OSX specific
 	CMAKE_OSX_ARCHITECTURES            = "@CMAKE_OSX_ARCHITECTURES@",
-
+   
+    -- Fixes and overrides
+    LUA_LIBRARY = root .. "/@INSTALL_LIB@/@CMAKE_SHARED_LIBRARY_PREFIX@lua@CMAKE_SHARED_LIBRARY_SUFFIX@",
 }
 
 -- Commands to use for building. (CMake 2.8+)
