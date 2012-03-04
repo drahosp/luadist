@@ -27,9 +27,9 @@ set ( DIST_TYPE ${DETECTED_TYPE} CACHE STRING "Host system type. PLEASE CHECK!" 
 set ( DIST_ARCH ${DETECTED_ARCH} CACHE STRING "Host system architecture. PLEASE CHECK!" FORCE )
 
 set ( DIST_LUA_LIBRARY "/${INSTALL_LIB}/${CMAKE_SHARED_LIBRARY_PREFIX}lua${CMAKE_SHARED_LIBRARY_SUFFIX}" )
-if ( WIN32 )
-	# On Windows use the import library with .a suffix
-	set ( DIST_LUA_LIBRARY "${DIST_LUA_LIBRARY}.a" )
+if ( WIN32 OR CYGWIN )
+	# On Windows use the import library
+	set ( DIST_LUA_LIBRARY "/${INSTALL_LIB}/${CMAKE_IMPORT_LIBRARY_PREFIX}lua${CMAKE_IMPORT_LIBRARY_SUFFIX}" )
 endif ()
 
 configure_file ( dist/config.lua.in ${CMAKE_CURRENT_BINARY_DIR}/dist/config.lua @ONLY )
