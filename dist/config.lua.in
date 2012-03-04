@@ -85,7 +85,7 @@ variables	= {
 	CMAKE_OSX_ARCHITECTURES            = "@CMAKE_OSX_ARCHITECTURES@",
    
     -- Fixes and overrides
-    LUA_LIBRARY = root .. "/@INSTALL_LIB@/@CMAKE_SHARED_LIBRARY_PREFIX@lua@CMAKE_SHARED_LIBRARY_SUFFIX@",
+    LUA_LIBRARY 					   = root .. "@DIST_LUA_LIBRARY@",
 }
 
 -- Commands to use for building. (CMake 2.8+)
@@ -100,6 +100,13 @@ makeDebug       = "cmake --build . --target install --clean-first"
 if (variables.CMAKE_GENERATOR == "Unix Makefiles") then
         make = make .. " -- -j6"
         makeDebug = makeDebug .. " -- -j6"
+end
+
+-- On Windows with MinGW use the SHELL trick to force mingw32-make to build in parallel
+-- Note: No numbers behind -j needed
+if (variables.CMAKE_GENERATOR == "MinGW Makefiles") then
+		make = "set SHELL=cmd.exe && " .. make .. " -- -j"
+		makeDebug = "set SHELL=cmd.exe && " .. makeDebug .. " -- -j"
 end
 
 -- Function used to display messages, warnings and errors
